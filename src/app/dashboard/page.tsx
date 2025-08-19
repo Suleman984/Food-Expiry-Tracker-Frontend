@@ -93,7 +93,7 @@ export default function Dashboard() {
           <input
             type="text"
             name="name"
-            placeholder="Enter Food Name"
+            placeholder="Food Name"
             value={formData.name}
             onChange={handleChange}
             className="border p-2 rounded"

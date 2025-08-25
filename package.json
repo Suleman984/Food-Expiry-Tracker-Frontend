@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
+    "@zxing/browser": "^0.1.5",
     "next": "15.4.6",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-qr-barcode-scanner": "^2.1.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

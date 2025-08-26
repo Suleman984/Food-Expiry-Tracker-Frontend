@@ -109,7 +109,7 @@ export default function Dashboard() {
           </div>
 
           {/* Scanner Button */}
-          <div className="flex justify-center mb-8">
+          {/* <div className="flex justify-center mb-8">
             <button
               onClick={() => setShowScanner(!showScanner)}
               className="px-6 py-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
@@ -150,10 +150,10 @@ export default function Dashboard() {
                 </>
               )}
             </button>
-          </div>
+          </div> */}
 
           {/* Scanner Component */}
-          {showScanner && (
+          {/* {showScanner && (
             <div className="flex justify-center my-6">
               <div className="p-4 bg-white rounded-xl shadow-2xl">
                 <BarcodeScannerComponent
@@ -168,13 +168,13 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Add Item Button */}
           <div className="flex justify-center mb-8">
             <button
               onClick={() => setShowForm(!showForm)}
-              className="px-6 py-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+              className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
             >
               {showForm ? (
                 <>

@@ -9,7 +9,7 @@ export default function Home() {
       </p>
       <Link
         href="/dashboard"
-        className="px-6 py-3 bg-green-600 text-white rounded-lg"
+        className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg"
       >
         Go to Dashboard
       </Link>

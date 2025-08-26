@@ -4,7 +4,7 @@ import { AuthButton } from "../AuthButton";
 
 export default function Navbar() {
   return (
-    <nav className="bg-green-600 text-white p-4 flex justify-between items-center">
+    <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 flex justify-between items-center">
       <Link href="/" className="text-xl font-bold">
         🍎 Food Tracker
       </Link>

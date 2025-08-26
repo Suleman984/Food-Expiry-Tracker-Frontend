@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* <div className="fixed top-0 left-0 right-0 w-full z-50"> */}
           <Navbar />
         {/* </div> */}
-        <main className="w-full pt-16">{children}</main>
+        <main className="w-full">{children}</main>
       </body>
     </html>
   );

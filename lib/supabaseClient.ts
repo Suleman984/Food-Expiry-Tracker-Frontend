@@ -5,7 +5,7 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
-    "Missing environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_ANON_KEY."
+    "Missing environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_ANON_KEY.!"
   );
 }
 

@@ -10,8 +10,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-gray-50 min-h-screen">
-        <Navbar />
-        <main className="w-full">{children}</main>
+        <div className="fixed top-0 left-0 right-0 w-full z-50">
+          <Navbar />
+        </div>
+        <main className="w-full pt-16">{children}</main>
       </body>
     </html>
   );

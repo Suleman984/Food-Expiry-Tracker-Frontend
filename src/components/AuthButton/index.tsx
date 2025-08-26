@@ -36,7 +36,7 @@ export function AuthButton() {
         <div className="flex items-center gap-3 bg-white/10 px-2 py-2 rounded-lg shadow-sm">
           {/* Profile Circle */}
           <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 font-semibold">
-            {/* Could later be replaced with profile image */}
+            
             {user.user_metadata?.name?.charAt(0).toUpperCase() || "?"}
           </div>
 

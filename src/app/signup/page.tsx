@@ -16,7 +16,7 @@ export default function SignupPage() {
       password,
       options: {
         data: {
-          name: fullName, // 👈 yahan custom field gaya user_metadata mein
+          name: fullName, 
         },
       },
     });

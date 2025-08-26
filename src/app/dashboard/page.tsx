@@ -6,7 +6,7 @@ import { supabase } from "../../../lib/supabaseClient";
 import FoodTable from "@/components/FoodTable/Index";
 import dynamic from "next/dynamic";
 
-// barcode scanner ko dynamically load karna (ssr issue avoid karega)
+
 const BarcodeScannerComponent = dynamic(
   () => import("react-qr-barcode-scanner"),
   { ssr: false }

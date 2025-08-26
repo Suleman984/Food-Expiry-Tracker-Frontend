@@ -1,0 +1,21 @@
+{
+  "name": "My Food Tracker",
+  "short_name": "FoodTracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

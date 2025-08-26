@@ -35,9 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className="bg-gray-50 min-h-screen">
-        <div className="fixed top-0 left-0 right-0 w-full z-50">
+        {/* <div className="fixed top-0 left-0 right-0 w-full z-50"> */}
           <Navbar />
-        </div>
+        {/* </div> */}
         <main className="w-full pt-16">{children}</main>
       </body>
     </html>

@@ -50,6 +50,7 @@ export function AuthButton() {
           >
             Login
           </Link>
+          {/* signup */}
           <Link
             href="/signup"
             className="px-4 py-2 bg-white text-green-600 rounded-lg"

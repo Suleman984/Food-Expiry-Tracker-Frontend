@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline | Food Tracker</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: sans-serif;
+        background: #f3f4f6;
+        text-align: center;
+        color: #333;
+      }
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+      }
+      p {
+        margin-bottom: 1.5rem;
+      }
+      .logo {
+        width: 100px;
+        margin-bottom: 20px;
+      }
+      button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="/icons/logo.png" alt="Food Tracker" class="logo" />
+    <h1>You’re offline</h1>
+    <p>Please check your internet connection.<br />We’ll reconnect when you’re back online.</p>
+    <button onclick="window.location.reload()">🔄 Try Again</button>
+  </body>
+</html>

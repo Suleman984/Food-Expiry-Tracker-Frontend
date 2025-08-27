@@ -96,7 +96,7 @@ export default function Dashboard() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 p-6">
+      <div className="p-6">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">

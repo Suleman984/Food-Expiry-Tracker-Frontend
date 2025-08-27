@@ -19,8 +19,8 @@ export const metadata = {
     title: "My Food Tracker",
   },
   icons: {
-    icon: "/icons/icon-192x192.png",
-    apple: "/icons/icon-192x192.png",
+    icon: "/icons/logo.png",
+    apple: "/icons/logo.png",
   },
 };
 

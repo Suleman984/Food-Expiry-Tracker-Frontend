@@ -21,9 +21,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleGitHubLogin = async () => {
-    await supabase.auth.signInWithOAuth({ provider: "github" });
-  };
+ 
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow rounded">
@@ -45,12 +43,7 @@ export default function LoginPage() {
         />
         <button className="bg-gradient-to-r from-indigo-600 to-purple-600  text-white p-2 rounded">Login</button>
       </form>
-      <button
-        onClick={handleGitHubLogin}
-        className="mt-4 w-full bg-gray-800 text-white p-2 rounded"
-      >
-        Login with GitHub
-      </button>
+     
     </div>
   );
 }

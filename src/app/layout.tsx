@@ -3,12 +3,16 @@ import Navbar from "@/components/Navbar/Index";
 
 // Separate viewport export (Next.js 14+ requirement)
 export const viewport = {
-  themeColor: "#2563eb",
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#2563eb' },
+    { media: '(prefers-color-scheme: dark)', color: '#1f2937' }
+  ],
   width: "device-width",
   initialScale: 1,
+  colorScheme: "light dark",
 };
 
-// Metadata without themeColor
+// Metadata
 export const metadata = {
   title: "My Food Tracker",
   description: "Track your meals easily with Supabase + Next.js",
@@ -19,26 +23,25 @@ export const metadata = {
     title: "My Food Tracker",
   },
   icons: {
-    icon: "/icons/logo.png",
-    apple: "/icons/logo.png",
+    icon: "/icons/logo192.png",
+    apple: "/icons/logo192.png",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
-        <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="My Food Tracker" />
         <link rel="apple-touch-icon" href="/icons/logo192.png" />
+        <meta name="color-scheme" content="light dark" />
       </head>
-      <body className="bg-gray-50 min-h-screen">
-        {/* <div className="fixed top-0 left-0 right-0 w-full z-50"> */}
-          <Navbar />
-        {/* </div> */}
-        <main className="w-full">{children}</main>
+      <body className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
+        <Navbar />
+        <main className="w-full min-h-screen">{children}</main>
       </body>
     </html>
   );

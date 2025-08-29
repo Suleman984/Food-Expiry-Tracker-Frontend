@@ -32,7 +32,7 @@ function EmptyState() {
       <p className="text-lg text-gray-600 dark:text-gray-300 animate-pulse">Let&apos;s get started by adding your first item!</p>
       <div className="mt-4 flex justify-center items-center">
         <span className="inline-block animate-bounce text-yellow-500 text-2xl">👇</span>
-        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">Tap "Add Item" to start tracking.</span>
+        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">Tap &quot;Add Item&quot; to start tracking.</span>
       </div>
     </div>
   );

@@ -1,551 +1,270 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "../../../lib/supabaseClient";
-
-interface FoodItem {
-  id: number;
-  name: string;
-  quantity: number;
-  expiry_date: string;
-  user_id: string;
-  created_at?: string;
-}
+import {
+  FoodItem, inputClasses,
+  formatDate,
+  getStatus,
+  getStatusClasses,
+  deleteItem,
+  updateItem,
+  buttonStyles,
+} from "../../../utils/FoodTable";
 
 interface FoodTableProps {
   items: FoodItem[];
   setItems: React.Dispatch<React.SetStateAction<FoodItem[]>>;
 }
 
-// Loader component
 function Loader() {
   return (
     <div className="flex justify-center items-center h-10">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-indigo-600"></div>
-      <span className="ml-4 text-lg text-gray-600 animate-pulse">Loading your pantry...</span>
+      <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-indigo-600 dark:border-indigo-400"></div>
+      <span className="ml-4 text-lg text-gray-600 dark:text-gray-300 animate-pulse">Loading your pantry...</span>
     </div>
   );
 }
 
-
-function EditableField<T>({
-  type,
-  value,
-  onChange,
-  className,
-}: {
-  type: "text" | "number" | "date";
-  value: T;
-  onChange: (value: T) => void;
-  className?: string;
-}) {
+function EmptyState() {
   return (
-    <input
-      type={type}
-      value={String(value)}
-      onChange={(e) => onChange(e.target.value as T)}
-      className={`border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full text-sm ${className}`}
-    />
-  );
-}
-
-
-function EmptyState({ message, subMessage }: { message: string; subMessage: string }) {
-  return (
-    <div className="text-center p-6 bg-white rounded-xl shadow-lg animate-fade-in">
-      <h2 className="text-2xl font-bold text-indigo-600 mb-2">{message}</h2>
-      <p className="text-lg text-gray-600 animate-pulse">{subMessage}</p>
+    <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700">
+      <h2 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">Your Food Inventory is Empty! 🌱</h2>
+      <p className="text-lg text-gray-600 dark:text-gray-300 animate-pulse">Let's get started by adding your first item!</p>
       <div className="mt-4 flex justify-center items-center">
         <span className="inline-block animate-bounce text-yellow-500 text-2xl">👇</span>
-        <span className="ml-2 text-sm text-gray-500 transition-opacity duration-500 opacity-100 hover:opacity-75">
-          Tap &quot;Add Item&quot; to start tracking.
-        </span>
+        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">Tap "Add Item" to start tracking.</span>
       </div>
-    </div>
-  );
-}
-
-
-function TableRow({
-  item,
-  editingId,
-  editedItem,
-  setEditedItem,
-  handleUpdate,
-  handleDelete,
-  setEditingId,
-  formatDate,
-  getStatus,
-}: {
-  item: FoodItem;
-  editingId: number | null;
-  editedItem: Partial<FoodItem> | null;
-  setEditedItem: React.Dispatch<React.SetStateAction<Partial<FoodItem> | null>>;
-  handleUpdate: (id: number) => Promise<void>;
-  handleDelete: (id: number) => Promise<void>;
-  setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
-  formatDate: (dateStr: string | undefined) => string;
-  getStatus: (expiry: string) => string;
-}) {
-  return (
-    <tr className="shopItem border-b border-gray-200 hover:bg-gray-50 transition-all duration-200">
-      <td className="p-3 text-gray-800 text-sm">
-        {editingId === item.id ? (
-          <EditableField
-            type="text"
-            value={editedItem?.name || item.name}
-            onChange={(value) => setEditedItem({ ...editedItem, name: value })}
-            className="shopName"
-          />
-        ) : (
-          <span className="shopName">{item.name}</span>
-        )}
-      </td>
-      <td className="p-3 text-gray-800 text-sm">
-        {editingId === item.id ? (
-          <EditableField
-            type="number"
-            value={editedItem?.quantity || item.quantity}
-            onChange={(value) => setEditedItem({ ...editedItem, quantity: Number(value) || 0 })}
-          />
-        ) : (
-          item.quantity
-        )}
-      </td>
-      <td className="p-3 text-gray-800 text-sm">{formatDate(item.created_at)}</td>
-      <td className="p-3 text-gray-800 text-sm">
-        {editingId === item.id ? (
-          <EditableField
-            type="date"
-            value={editedItem?.expiry_date || item.expiry_date}
-            onChange={(value) => setEditedItem({ ...editedItem, expiry_date: value })}
-          />
-        ) : (
-          formatDate(item.expiry_date)
-        )}
-      </td>
-      <td className="p-3 text-gray-800">
-        <span
-          className={`shopAvailability px-2 py-1 rounded-full text-xs ${
-            getStatus(item.expiry_date).includes("Expired")
-              ? "bg-red-100 text-red-600"
-              : getStatus(item.expiry_date).includes("Soon")
-              ? "bg-yellow-100 text-yellow-600"
-              : "bg-green-100 text-green-600"
-          }`}
-        >
-          {getStatus(item.expiry_date)}
-        </span>
-      </td>
-      <td className="p-3 space-x-2">
-        {editingId === item.id ? (
-          <>
-            <button
-              onClick={() => handleUpdate(item.id)}
-              className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => {
-                setEditingId(null);
-                setEditedItem(null);
-              }}
-              className="px-3 py-1 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-all duration-200 text-sm"
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => {
-                setEditingId(item.id);
-                setEditedItem({ id: item.id, name: item.name, quantity: item.quantity, expiry_date: item.expiry_date });
-              }}
-              className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDelete(item.id)}
-              className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm"
-            >
-              Delete
-            </button>
-          </>
-        )}
-      </td>
-    </tr>
-  );
-}
-
-
-function FoodCard({
-  item,
-  editingId,
-  editedItem,
-  setEditedItem,
-  handleUpdate,
-  handleDelete,
-  setEditingId,
-  formatDate,
-  getStatus,
-}: {
-  item: FoodItem;
-  editingId: number | null;
-  editedItem: Partial<FoodItem> | null;
-  setEditedItem: React.Dispatch<React.SetStateAction<Partial<FoodItem> | null>>;
-  handleUpdate: (id: number) => Promise<void>;
-  handleDelete: (id: number) => Promise<void>;
-  setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
-  formatDate: (dateStr: string | undefined) => string;
-  getStatus: (expiry: string) => string;
-}) {
-  return (
-    <div className="shopItem bg-white rounded-xl shadow-lg p-4 transition-all duration-200 hover:shadow-xl animate-slide-up">
-      <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <h3 className="font-semibold text-base text-gray-800">
-            {editingId === item.id ? (
-              <EditableField
-                type="text"
-                value={editedItem?.name || item.name}
-                onChange={(value) => setEditedItem({ ...editedItem, name: value })}
-                className="shopName"
-              />
-            ) : (
-              <span className="shopName">{item.name}</span>
-            )}
-          </h3>
-          <span
-            className={`shopAvailability px-2 py-1 rounded-full text-xs ${
-              getStatus(item.expiry_date).includes("Expired")
-                ? "bg-red-100 text-red-600"
-                : getStatus(item.expiry_date).includes("Soon")
-                ? "bg-yellow-100 text-yellow-600"
-                : "bg-green-100 text-green-600"
-            }`}
-          >
-            {getStatus(item.expiry_date)}
-          </span>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <p className="text-xs text-gray-500">Quantity</p>
-            {editingId === item.id ? (
-              <EditableField
-                type="number"
-                value={editedItem?.quantity || item.quantity}
-                onChange={(value) => setEditedItem({ ...editedItem, quantity: Number(value) || 0 })}
-              />
-            ) : (
-              <p className="text-gray-800 text-sm">{item.quantity}</p>
-            )}
-          </div>
-          <div>
-            <p className="text-xs text-gray-500">Added At</p>
-            <p className="text-gray-800 text-sm">{formatDate(item.created_at)}</p>
-          </div>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Expiry Date</p>
-          {editingId === item.id ? (
-            <EditableField
-              type="date"
-              value={editedItem?.expiry_date || item.expiry_date}
-              onChange={(value) => setEditedItem({ ...editedItem, expiry_date: value })}
-              className="mt-1"
-            />
-          ) : (
-            <p className="text-gray-800 text-sm">{formatDate(item.expiry_date)}</p>
-          )}
-        </div>
-        <div className="flex space-x-2 pt-2">
-          {editingId === item.id ? (
-            <>
-              <button
-                onClick={() => handleUpdate(item.id)}
-                className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  setEditingId(null);
-                  setEditedItem(null);
-                }}
-                className="flex-1 px-3 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-all duration-200 text-sm"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => {
-                  setEditingId(item.id);
-                  setEditedItem({ id: item.id, name: item.name, quantity: item.quantity, expiry_date: item.expiry_date });
-                }}
-                className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(item.id)}
-                className="flex-1 px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm"
-              >
-                Delete
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Desktop table view
-function DesktopTableView({
-  items,
-  editingId,
-  editedItem,
-  setEditedItem,
-  handleUpdate,
-  handleDelete,
-  setEditingId,
-  formatDate,
-  getStatus,
-}: {
-  items: FoodItem[];
-  editingId: number | null;
-  editedItem: Partial<FoodItem> | null;
-  setEditedItem: React.Dispatch<React.SetStateAction<Partial<FoodItem> | null>>;
-  handleUpdate: (id: number) => Promise<void>;
-  handleDelete: (id: number) => Promise<void>;
-  setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
-  formatDate: (dateStr: string | undefined) => string;
-  getStatus: (expiry: string) => string;
-}) {
-  return (
-    <div className="hidden lg:block bg-white rounded-xl shadow-2xl overflow-hidden">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-            <th className="p-3 text-left font-semibold text-sm">Name</th>
-            <th className="p-3 text-left font-semibold text-sm">Quantity</th>
-            <th className="p-3 text-left font-semibold text-sm">Added At</th>
-            <th className="p-3 text-left font-semibold text-sm">Expiry Date</th>
-            <th className="p-3 text-left font-semibold text-sm">Status</th>
-            <th className="p-3 text-left font-semibold text-sm">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.length === 0 ? (
-            <tr>
-              <td colSpan={6} className="text-center p-6 text-gray-500">
-                <EmptyState
-                  message="Your Food Inventory is Empty! 🌱"
-                  subMessage="Let’s get started by adding your first item!"
-                />
-              </td>
-            </tr>
-          ) : (
-            items.map((item) => (
-              <TableRow
-                key={item.id}
-                item={item}
-                editingId={editingId}
-                editedItem={editedItem}
-                setEditedItem={setEditedItem}
-                handleUpdate={handleUpdate}
-                handleDelete={handleDelete}
-                setEditingId={setEditingId}
-                formatDate={formatDate}
-                getStatus={getStatus}
-              />
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// Mobile card view
-function MobileCardView({
-  items,
-  editingId,
-  editedItem,
-  setEditedItem,
-  handleUpdate,
-  handleDelete,
-  setEditingId,
-  formatDate,
-  getStatus,
-}: {
-  items: FoodItem[];
-  editingId: number | null;
-  editedItem: Partial<FoodItem> | null;
-  setEditedItem: React.Dispatch<React.SetStateAction<Partial<FoodItem> | null>>;
-  handleUpdate: (id: number) => Promise<void>;
-  handleDelete: (id: number) => Promise<void>;
-  setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
-  formatDate: (dateStr: string | undefined) => string;
-  getStatus: (expiry: string) => string;
-}) {
-  return (
-    <div className="lg:hidden space-y-4">
-      {items.length === 0 ? (
-        <EmptyState
-          message="Your Pantry is Waiting! 🌿"
-          subMessage="Time to add your first delicious item!"
-        />
-      ) : (
-        items.map((item) => (
-          <FoodCard
-            key={item.id}
-            item={item}
-            editingId={editingId}
-            editedItem={editedItem}
-            setEditedItem={setEditedItem}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-            setEditingId={setEditingId}
-            formatDate={formatDate}
-            getStatus={getStatus}
-          />
-        ))
-      )}
     </div>
   );
 }
 
 export default function FoodTable({ items, setItems }: FoodTableProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editedItem, setEditedItem] = useState<Partial<FoodItem> | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [editedItem, setEditedItem] = useState<Partial<FoodItem>>({});
+  const [loading, setLoading] = useState(true);
 
-  // Simulate loading state based on items prop
   useEffect(() => {
-    if (items && items.length >= 0) {
-      setLoading(false);
-    }
+    if (items && items.length >= 0) setLoading(false);
   }, [items]);
 
-  // Delete item from Supabase and update state
+  const handleEdit = (item: FoodItem) => {
+    setEditingId(item.id);
+    setEditedItem({ name: item.name, quantity: item.quantity, expiry_date: item.expiry_date });
+  };
+
+  const handleSave = async (id: number) => {
+    setLoading(true);
+    const result = await updateItem(id, editedItem);
+
+    if (result.success && result.data) {
+      setItems(prev => prev.map(item => item.id === id ? { ...item, ...result.data } : item));
+      setEditingId(null);
+      setEditedItem({});
+    } else {
+      alert(`Failed to update item: ${result.error}`);
+    }
+    setLoading(false);
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setEditedItem({});
+  };
+
   const handleDelete = async (id: number) => {
     setLoading(true);
-    const { error } = await supabase.from("food_items").delete().eq("id", id);
-    if (!error) {
-      setItems(items.filter((item) => item.id !== id));
+    const result = await deleteItem(id);
+
+    if (result.success) {
+      setItems(prev => prev.filter(item => item.id !== id));
     } else {
-      console.error("Delete error:", error);
-      alert("Failed to delete item: " + error.message);
+      alert(`Failed to delete item: ${result.error}`);
     }
     setLoading(false);
   };
 
-  // Update item in Supabase and refresh state
-  const handleUpdate = async (id: number) => {
-    if (!editedItem || !editedItem.name || !editedItem.quantity || !editedItem.expiry_date) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    setLoading(true);
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData?.session) {
-      alert("You must be logged in to update items.");
-      setLoading(false);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("food_items")
-      .update({
-        name: editedItem.name,
-        quantity: editedItem.quantity,
-        expiry_date: editedItem.expiry_date,
-      })
-      .eq("id", id)
-      .select();
-
-    if (error) {
-      console.error("Update error:", error.message);
-      alert("Failed to update item: " + error.message);
-      setLoading(false);
-      return;
-    }
-
-    if (data && data.length > 0) {
-      setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...editedItem } : item)));
-      setEditingId(null);
-      setEditedItem(null);
-    } else {
-      const { data: refreshedData, error: refreshError } = await supabase
-        .from("food_items")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (refreshError || !refreshedData) {
-        console.error("Refresh error:", refreshError?.message || "No data found");
-        alert("Failed to update or refresh data. Check console for details.");
-      } else {
-        setItems((prev) => prev.map((item) => (item.id === id ? refreshedData : item)));
-        setEditingId(null);
-        setEditedItem(null);
-      }
-    }
-    setLoading(false);
-  };
-
-  // Format date to show only date portion
-  const formatDate = (dateStr: string | undefined) => {
-    if (!dateStr) return "";
-    return new Date(dateStr).toISOString().split("T")[0]; // Extracts "YYYY-MM-DD"
-  };
-
-  // Determine expiry status
-  const getStatus = (expiry: string) => {
-    const today = new Date();
-    const exp = new Date(expiry);
-    if (exp < today) return "Expired ❌";
-    if ((exp.getTime() - today.getTime()) / (1000 * 3600 * 24) <= 3) return "Expiring Soon ⚠️";
-    return "Fresh ✅";
-  };
+  if (loading) return <Loader />;
+  if (items.length === 0) return <EmptyState />;
 
   return (
     <div className="w-full">
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          <DesktopTableView
-            items={items}
-            editingId={editingId}
-            editedItem={editedItem}
-            setEditedItem={setEditedItem}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-            setEditingId={setEditingId}
-            formatDate={formatDate}
-            getStatus={getStatus}
-          />
-          <MobileCardView
-            items={items}
-            editingId={editingId}
-            editedItem={editedItem}
-            setEditedItem={setEditedItem}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-            setEditingId={setEditingId}
-            formatDate={formatDate}
-            getStatus={getStatus}
-          />
-        </>
-      )}
+      {/* Desktop Header */}
+      <div className="hidden lg:block bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-t-xl p-4">
+        <div className="grid grid-cols-6 gap-4 text-sm font-semibold">
+          <div>Name</div>
+          <div>Quantity</div>
+          <div>Added At</div>
+          <div>Expiry Date</div>
+          <div>Status</div>
+          <div>Actions</div>
+        </div>
+      </div>
+
+      {/* Items */}
+      <div className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl lg:rounded-t-none shadow-2xl overflow-hidden">
+        <div className="divide-y divide-gray-200 dark:divide-gray-700 space-y-4 lg:space-y-0 p-4 lg:p-0">
+          {items.map((item) => {
+            const isEditing = editingId === item.id;
+            const status = getStatus(item.expiry_date);
+
+            return (
+              <div key={item.id} className="shopItem lg:hover:bg-gray-50 dark:lg:hover:bg-gray-700 transition-all duration-200 lg:p-4 animate-slide-up">
+                {/* Mobile Card Layout */}
+                <div className="lg:hidden space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1 pr-3">
+                      <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 block">Name</label>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editedItem.name || ''}
+                          onChange={e => setEditedItem(prev => ({ ...prev, name: e.target.value }))}
+                          className={`${inputClasses} shopName`}
+                        />
+                      ) : (
+                        <span className="shopName text-base font-semibold text-gray-800 dark:text-gray-200">{item.name}</span>
+                      )}
+                    </div>
+                    <span className={`shopAvailability px-2 py-1 rounded-full text-xs ${getStatusClasses(status)}`}>
+                      {status}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 block">Quantity</label>
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          value={editedItem.quantity || ''}
+                          onChange={e => setEditedItem(prev => ({ ...prev, quantity: Number(e.target.value) }))}
+                          className={inputClasses}
+                        />
+                      ) : (
+                        <span className="text-sm text-gray-800 dark:text-gray-200">{item.quantity}</span>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 block">Added</label>
+                      <span className="text-sm text-gray-800 dark:text-gray-200">{formatDate(item.created_at)}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 block">Expiry</label>
+                    {isEditing ? (
+                      <input
+                        type="date"
+                        value={editedItem.expiry_date || ''}
+                        onChange={e => setEditedItem(prev => ({ ...prev, expiry_date: e.target.value }))}
+                        className={inputClasses}
+                      />
+                    ) : (
+                      <span className="text-sm text-gray-800 dark:text-gray-200">{formatDate(item.expiry_date)}</span>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    {isEditing ? (
+                      <>
+                        <button onClick={() => handleSave(item.id)} className={`flex-1 px-3 py-2 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.save}`}>
+                          Save
+                        </button>
+                        <button onClick={handleCancel} className={`flex-1 px-3 py-2 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.cancel}`}>
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={() => handleEdit(item)} className={`flex-1 px-3 py-2 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.edit}`}>
+                          Edit
+                        </button>
+                        <button onClick={() => handleDelete(item.id)} className={`flex-1 px-3 py-2 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.delete}`}>
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Desktop Grid Layout */}
+                <div className="hidden lg:grid grid-cols-6 gap-4 items-center">
+                  <div>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editedItem.name || ''}
+                        onChange={e => setEditedItem(prev => ({ ...prev, name: e.target.value }))}
+                        className={`${inputClasses} shopName`}
+                      />
+                    ) : (
+                      <span className="shopName text-sm text-gray-800 dark:text-gray-200">{item.name}</span>
+                    )}
+                  </div>
+
+                  <div>
+                    {isEditing ? (
+                      <input
+                        type="number"
+                        value={editedItem.quantity || ''}
+                        onChange={e => setEditedItem(prev => ({ ...prev, quantity: Number(e.target.value) }))}
+                        className={inputClasses}
+                      />
+                    ) : (
+                      <span className="text-sm text-gray-800 dark:text-gray-200">{item.quantity}</span>
+                    )}
+                  </div>
+
+                  <div>
+                    <span className="text-sm text-gray-800 dark:text-gray-200">{formatDate(item.created_at)}</span>
+                  </div>
+
+                  <div>
+                    {isEditing ? (
+                      <input
+                        type="date"
+                        value={editedItem.expiry_date || ''}
+                        onChange={e => setEditedItem(prev => ({ ...prev, expiry_date: e.target.value }))}
+                        className={inputClasses}
+                      />
+                    ) : (
+                      <span className="text-sm text-gray-800 dark:text-gray-200">{formatDate(item.expiry_date)}</span>
+                    )}
+                  </div>
+
+                  <div>
+                    <span className={`shopAvailability px-2 py-1 rounded-full text-xs ${getStatusClasses(status)}`}>
+                      {status}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    {isEditing ? (
+                      <>
+                        <button onClick={() => handleSave(item.id)} className={`px-3 py-1 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.save}`}>
+                          Save
+                        </button>
+                        <button onClick={handleCancel} className={`px-3 py-1 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.cancel}`}>
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={() => handleEdit(item)} className={`px-3 py-1 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.edit}`}>
+                          Edit
+                        </button>
+                        <button onClick={() => handleDelete(item.id)} className={`px-3 py-1 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.delete}`}>
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

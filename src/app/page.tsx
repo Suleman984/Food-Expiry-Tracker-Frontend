@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <section className="text-center py-20 px-4 min-h-screen bg-gray-50 dark:bg-gray-900">
+    <section className="text-center py-20 px-4  bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
           Welcome to Food Tracker 🍴

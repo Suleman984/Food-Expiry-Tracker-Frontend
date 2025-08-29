@@ -14,74 +14,18 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setMessage("");
-    setMessageType("");
-
-    // Basic validation
-    if (!fullName.trim()) {
-      setMessage("Please enter your full name");
-      setMessageType("error");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!email || !password) {
-      setMessage("Please fill in all fields");
-      setMessageType("error");
-      setIsLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setMessage("Password must be at least 6 characters long");
-      setMessageType("error");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name: fullName,
-          },
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: fullName, 
         },
-      });
+      },
+    });
 
-      if (error) {
-        if (error.message.includes("already registered")) {
-          setMessage("This email is already registered. Please try logging in instead.");
-          setMessageType("error");
-        } else {
-          setMessage(error.message);
-          setMessageType("error");
-        }
-      } else {
-        if (data.user && !data.user.email_confirmed_at) {
-          setMessage(`✅ Account created successfully! Please check your email (${email}) and click the verification link before logging in.`);
-          setMessageType("success");
-          
-          // Redirect after showing message
-          setTimeout(() => {
-            router.push("/login");
-          }, 4000);
-        } else {
-          setMessage("Account created successfully! Redirecting to login...");
-          setMessageType("success");
-          setTimeout(() => {
-            router.push("/login");
-          }, 2000);
-        }
-      }
-    } catch (err) {
-      setMessage("Something went wrong. Please try again.");
-      setMessageType("error");
-    } finally {
-      setIsLoading(false);
-    }
+    if (!error) router.push("/login");
+    else alert(error.message);
   };
 
   return (

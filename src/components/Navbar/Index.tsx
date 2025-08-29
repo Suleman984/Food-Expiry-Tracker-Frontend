@@ -4,15 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
-
+import { User } from "@supabase/supabase-js";
 export default function Navbar() {
-  const [User, setUser] = useState<any>(null);
+  const [User, setUser] = useState<User | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
   const fetchUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+    console.log("Fetched user:", user);
     setUser(user);
   };
 

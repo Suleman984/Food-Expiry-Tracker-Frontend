@@ -98,8 +98,8 @@ export const updateItem = async (
 export const inputClasses = `
   border border-gray-300 dark:border-gray-600 p-2 rounded-lg 
   bg-white dark:bg-gray-700 
-  text-gray-900 dark:text-white 
-  placeholder-gray-500 dark:placeholder-gray-400
+  text-gray-900 dark:text-black 
+  placeholder-gray-500 dark:placeholder-black
   focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent
   w-full text-sm transition-colors duration-200
 `.trim();

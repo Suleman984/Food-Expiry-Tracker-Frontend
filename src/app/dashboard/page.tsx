@@ -221,7 +221,7 @@ export default function Dashboard() {
               className="mb-8 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg mx-auto flex flex-col gap-4 transform transition-all duration-500 animate-slide-up"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm dark:text-gray-200 font-medium text-gray-700 mb-1">
                   Food Name
                 </label>
                 <input
@@ -235,7 +235,7 @@ export default function Dashboard() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium dark:text-gray-200 text-gray-700 mb-1">
                   Quantity
                 </label>
                 <input
@@ -249,12 +249,13 @@ export default function Dashboard() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium  dark:text-gray-200 text-gray-700 mb-1">
                   Expiry Date
                 </label>
                 <input
                   type="date"
                   name="expiry_date"
+                  placeholder="Enter expiry date"
                   value={formData.expiry_date}
                   onChange={handleChange}
                   className="w-full border border-gray-300 dark:text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"

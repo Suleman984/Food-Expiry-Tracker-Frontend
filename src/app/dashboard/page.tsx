@@ -100,10 +100,10 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-extrabold text-gray-800 mb-3 animate-fade-in">
+            <h1 className="text-4xl font-extrabold text-gray-800 mb-3 dark:text-white animate-fade-in">
               Food Inventory Dashboard
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 dark:text-white animate-fade-in delay-100">
               Track your meals and stay ahead of expiry dates 🍎
             </p>
           </div>
@@ -257,7 +257,7 @@ export default function Dashboard() {
                   name="expiry_date"
                   value={formData.expiry_date}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 dark:text-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full border border-gray-300 dark:text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   required
                 />
               </div>

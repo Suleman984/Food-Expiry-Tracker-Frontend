@@ -5,10 +5,13 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/router";
 export default function Navbar() {
   const [User, setUser] = useState<User | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter(); 
+  
 
   const fetchUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -24,6 +27,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    router.push("/login");
   };
 
   const navItems = [

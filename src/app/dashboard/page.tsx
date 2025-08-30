@@ -218,7 +218,7 @@ export default function Dashboard() {
           {showForm && (
             <form
               onSubmit={handleSubmit}
-              className="mb-8 p-6 bg-white rounded-xl shadow-2xl max-w-lg mx-auto flex flex-col gap-4 transform transition-all duration-500 animate-slide-up"
+              className="mb-8 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg mx-auto flex flex-col gap-4 transform transition-all duration-500 animate-slide-up"
             >
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -230,7 +230,7 @@ export default function Dashboard() {
                   placeholder="Enter food name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full border border-gray-300 dark:text-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   required
                 />
               </div>
@@ -244,7 +244,7 @@ export default function Dashboard() {
                   placeholder="Enter quantity"
                   value={formData.quantity}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full border dark:text-gray-200 border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   required
                 />
               </div>
@@ -257,7 +257,7 @@ export default function Dashboard() {
                   name="expiry_date"
                   value={formData.expiry_date}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full border border-gray-300 dark:text-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   required
                 />
               </div>
@@ -271,7 +271,7 @@ export default function Dashboard() {
           )}
 
           {/* Table Component */}
-          <div className="bg-white rounded-xl shadow-2xl p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6">
             <FoodTable items={items} setItems={setItems} />
           </div>
         </div>

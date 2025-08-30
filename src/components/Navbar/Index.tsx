@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import { User } from "@supabase/supabase-js";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; 
 export default function Navbar() {
   const [User, setUser] = useState<User | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);

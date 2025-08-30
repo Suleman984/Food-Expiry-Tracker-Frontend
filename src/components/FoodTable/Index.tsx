@@ -145,13 +145,13 @@ export default function FoodTable({ items, setItems }: FoodTableProps) {
                       )}
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-gray-500 dark:text-black mb-1 block">Added</label>
-                      <span className="text-sm text-gray-800 dark:text-black">{formatDate(item.created_at)}</span>
+                      <label className="text-xs font-medium text-gray-500 dark:text-gray-200 mb-1 block">Added</label>
+                      <span className="text-sm text-gray-800 dark:text-white">{formatDate(item.created_at)}</span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-gray-500 dark:text-black mb-1 block">Expiry</label>
+                    <label className="text-xs font-medium text-gray-500 dark:text-white mb-1 block">Expiry</label>
                     {isEditing ? (
                       <input
                         type="date"
@@ -198,7 +198,7 @@ export default function FoodTable({ items, setItems }: FoodTableProps) {
                         className={`${inputClasses} shopName`}
                       />
                     ) : (
-                      <span className="shopName text-sm text-gray-800 dark:text-black">{item.name}</span>
+                      <span className="shopName text-sm text-gray-800 dark:text-white">{item.name}</span>
                     )}
                   </div>
 
@@ -216,7 +216,7 @@ export default function FoodTable({ items, setItems }: FoodTableProps) {
                   </div>
 
                   <div>
-                    <span className="text-sm text-gray-800 dark:text-black">{formatDate(item.created_at)}</span>
+                    <span className="text-sm text-gray-800 dark:text-white">{formatDate(item.created_at)}</span>
                   </div>
 
                   <div>

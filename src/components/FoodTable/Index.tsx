@@ -141,7 +141,7 @@ export default function FoodTable({ items, setItems }: FoodTableProps) {
                           className={inputClasses}
                         />
                       ) : (
-                        <span className="text-sm text-gray-800 dark:text-black">{item.quantity}</span>
+                        <span className="text-sm text-gray-800 dark:text-white">{item.quantity}</span>
                       )}
                     </div>
                     <div>
@@ -160,7 +160,7 @@ export default function FoodTable({ items, setItems }: FoodTableProps) {
                         className={inputClasses}
                       />
                     ) : (
-                      <span className="text-sm text-gray-800 dark:text-black">{formatDate(item.expiry_date)}</span>
+                      <span className="text-sm text-gray-800 dark:text-white">{formatDate(item.expiry_date)}</span>
                     )}
                   </div>
 

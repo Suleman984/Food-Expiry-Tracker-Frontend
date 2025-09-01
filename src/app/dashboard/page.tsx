@@ -5,7 +5,9 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { supabase } from "../../../lib/supabaseClient";
 import FoodTable from "@/components/FoodTable/Index";
 import dynamic from "next/dynamic";
-
+import { setUser } from "../../../store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../store/store";
 
 const BarcodeScannerComponent = dynamic(
   () => import("react-qr-barcode-scanner"),
@@ -25,7 +27,8 @@ export default function Dashboard() {
   const [items, setItems] = useState<FoodItem[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
-
+  const user = useSelector((state: RootState) => state.auth.user);
+  const dispatch = useDispatch();
   // jab barcode scan hoga to product ka code milega
   const handleScan = async (result: string | null) => {
     console.log("Scanned result:", result);
@@ -50,9 +53,6 @@ export default function Dashboard() {
   // ✅ Fetch items for logged-in user
   useEffect(() => {
     const fetchItems = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -71,7 +71,22 @@ export default function Dashboard() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) dispatch(setUser(user));
+    };
+    fetchUser();
 
+    // listener for auth state changes
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      dispatch(setUser(session?.user ?? null));
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, [dispatch]);
   // ✅ Add new item
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

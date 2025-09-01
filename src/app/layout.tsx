@@ -1,6 +1,8 @@
+
 import "./globals.css";
 import Navbar from "@/components/Navbar/Index";
-
+import { Providers } from "./providers";
+import { store } from "../../store/store";
 // Separate viewport export (Next.js 14+ requirement)
 export const viewport = {
   themeColor: [
@@ -39,10 +41,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icons/logo192.png" />
         <meta name="color-scheme" content="light dark" />
       </head>
+      <Providers >
       <body className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
         <Navbar />
         <main className="w-full min-h-screen">{children}</main>
       </body>
+      </Providers>
     </html>
   );
 }

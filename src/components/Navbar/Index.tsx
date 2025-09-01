@@ -51,7 +51,7 @@ export default function Navbar() {
           <span>Food Tracker</span>
         </Link>
 
-        <div className="hidden md:flex space-x-4 items-center">
+        <div className=" md:flex space-x-4 items-center">
           {!user ? (
             navItems.map((item) => (
               <Link

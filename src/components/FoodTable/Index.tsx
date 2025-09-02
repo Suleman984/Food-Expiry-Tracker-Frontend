@@ -10,34 +10,12 @@ import {
   updateItem,
   buttonStyles,
 } from "../../../utils/FoodTable";
-
+import Loader from "./Loader";
+import EmptyState from "./EmptyState";
 interface FoodTableProps {
   items: FoodItem[];
   setItems: React.Dispatch<React.SetStateAction<FoodItem[]>>;
 }
-
-function Loader() {
-  return (
-    <div className="flex justify-center items-center h-10">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-indigo-600 dark:border-indigo-400"></div>
-      <span className="ml-4 text-lg text-gray-600 dark:text-gray-300 animate-pulse">Loading your pantry...</span>
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700">
-      <h2 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">Your Food Inventory is Empty! 🌱</h2>
-      <p className="text-lg text-gray-600 dark:text-gray-300 animate-pulse">Let&apos;s get started by adding your first item!</p>
-      <div className="mt-4 flex justify-center items-center">
-        <span className="inline-block animate-bounce text-yellow-500 text-2xl">👇</span>
-        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">Tap &quot;Add Item&quot; to start tracking.</span>
-      </div>
-    </div>
-  );
-}
-
 export default function FoodTable({ items, setItems }: FoodTableProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editedItem, setEditedItem] = useState<Partial<FoodItem>>({});
@@ -83,7 +61,7 @@ export default function FoodTable({ items, setItems }: FoodTableProps) {
     setLoading(false);
   };
 
-  if (loading) return <Loader />;
+
   if (items.length === 0) return <EmptyState />;
 
   return (
@@ -180,7 +158,7 @@ export default function FoodTable({ items, setItems }: FoodTableProps) {
                           Edit
                         </button>
                         <button onClick={() => handleDelete(item.id)} className={`flex-1 px-3 py-2 text-white rounded-lg text-sm transition-all duration-200 ${buttonStyles.delete}`}>
-                          Delete
+                          {loading ? <Loader /> : 'Delete'}
                         </button>
                       </>
                     )}

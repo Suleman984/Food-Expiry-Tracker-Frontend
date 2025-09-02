@@ -5,9 +5,6 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { supabase } from "../../../lib/supabaseClient";
 import FoodTable from "@/components/FoodTable/Index";
 import dynamic from "next/dynamic";
-import { setUser } from "../../../store/authSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
 
 const BarcodeScannerComponent = dynamic(
   () => import("react-qr-barcode-scanner"),
@@ -27,22 +24,7 @@ export default function Dashboard() {
   const [items, setItems] = useState<FoodItem[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
-  const user = useSelector((state: RootState) => state.auth.user);
-  const dispatch = useDispatch();
-  // jab barcode scan hoga to product ka code milega
-  const handleScan = async (result: string | null) => {
-    console.log("Scanned result:", result);
-    const res = await fetch(
-      `https://world.openfoodfacts.org/api/v0/product/${result}.json`
-    );
-    const product = await res.json();
-    console.log(product);
-    if(product.status === 0){
-      alert("Product data not available.");
-      return;
-    }
- 
-  };
+  const [user, setUser] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -50,11 +32,29 @@ export default function Dashboard() {
     expiry_date: "",
   });
 
-  // ✅ Fetch items for logged-in user
   useEffect(() => {
-    const fetchItems = async () => {
-      if (!user) return;
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
 
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchItems = async () => {
+      
       const { data, error } = await supabase
         .from("food_items")
         .select("*")
@@ -65,34 +65,30 @@ export default function Dashboard() {
     };
 
     fetchItems();
-  }, []);
+  }, [user]);
 
-  // ✅ Handle input change
+  const handleScan = async (result: string | null) => {
+    if (!result) return;
+    
+
+    const res = await fetch(
+      `https://world.openfoodfacts.org/api/v0/product/${result}.json`
+    );
+    const product = await res.json();
+    
+
+    if (product.status === 0) {
+      alert("Product data not available.");
+      return;
+    }
+  };
+
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) dispatch(setUser(user));
-    };
-    fetchUser();
-
-    // listener for auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      dispatch(setUser(session?.user ?? null));
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, [dispatch]);
-  // ✅ Add new item
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     if (!user) return;
 
     const { data, error } = await supabase
@@ -104,6 +100,7 @@ export default function Dashboard() {
       setItems((prev) => [...prev, ...data]);
       setShowForm(false);
       setFormData({ name: "", quantity: "", expiry_date: "" });
+      
     } else {
       console.error("Insert error:", error);
     }
@@ -254,7 +251,7 @@ export default function Dashboard() {
                   Quantity
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="quantity"
                   placeholder="Enter quantity"
                   value={formData.quantity}
@@ -293,35 +290,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Tailwind Animation Styles */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out;
-        }
-        .animate-slide-up {
-          animation: slide-up 0.5s ease-out;
-        }
-      `}</style>
+
     </ProtectedRoute>
   );
 }

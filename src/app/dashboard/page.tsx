@@ -5,7 +5,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { supabase } from "../../../lib/supabaseClient";
 import FoodTable from "@/components/FoodTable/Index";
 import dynamic from "next/dynamic";
-
+import { User } from "@supabase/supabase-js";
 const BarcodeScannerComponent = dynamic(
   () => import("react-qr-barcode-scanner"),
   { ssr: false }
@@ -24,7 +24,7 @@ export default function Dashboard() {
   const [items, setItems] = useState<FoodItem[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",

@@ -6,19 +6,13 @@ import { supabase } from "../../../lib/supabaseClient";
 import FoodTable from "@/components/FoodTable/Index";
 import dynamic from "next/dynamic";
 import { User } from "@supabase/supabase-js";
+import { FoodItem } from "../../../utils/FoodTable";
 const BarcodeScannerComponent = dynamic(
   () => import("react-qr-barcode-scanner"),
   { ssr: false }
 );
 
-interface FoodItem {
-  id: number;
-  name: string;
-  quantity: number;
-  expiry_date: string;
-  user_id: string;
-  created_at?: string;
-}
+
 
 export default function Dashboard() {
   const [items, setItems] = useState<FoodItem[]>([]);

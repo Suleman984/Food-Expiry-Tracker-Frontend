@@ -46,7 +46,8 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
+ useEffect(() => {
+    // check on mount
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
         router.push("/login");
@@ -54,6 +55,19 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         setLoading(false);
       }
     });
+
+    // listen for session changes
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, [router]);
 
   if (loading) {

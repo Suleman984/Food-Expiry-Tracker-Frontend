@@ -7,10 +7,10 @@ import FoodTable from "@/components/FoodTable/Index";
 import dynamic from "next/dynamic";
 import { User } from "@supabase/supabase-js";
 import { FoodItem } from "../../../utils/FoodTable";
-const BarcodeScannerComponent = dynamic(
-  () => import("react-qr-barcode-scanner"),
-  { ssr: false }
-);
+// const BarcodeScannerComponent = dynamic(
+//   () => import("react-qr-barcode-scanner"),
+//   { ssr: false }
+// );
 
 
 
